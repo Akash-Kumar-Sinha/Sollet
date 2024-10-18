@@ -1,12 +1,12 @@
-import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import * as bip39 from "bip39";
 
 const ImportWallet = () => {
   const navigate = useNavigate();
   const { handleSubmit, register } = useForm();
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: Record<string, string>) => {
     const mnemonic = Object.values(data).join(" ");
     console.log(mnemonic);
     if (bip39.validateMnemonic(mnemonic)) {
@@ -18,27 +18,34 @@ const ImportWallet = () => {
   };
 
   return (
-    <div className="h-screen bg-[#121212] flex items-center justify-center p-6">
-      <form onSubmit={handleSubmit(onSubmit)} className="bg-[#1e1e1e] w-full max-w-md text-[#f8f8f2] rounded-lg shadow-lg p-6">
-        <h1 className="text-2xl font-bold text-[#00f0ff] mb-4">Import Wallet</h1>
+    <div className="h-screen bg-zinc-950 flex items-center justify-center p-6">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="bg-white w-full max-w-md text-black rounded-lg shadow-xl p-8 flex flex-col items-center justify-center"
+      >
+        <h1 className="text-4xl font-bold text-purple-700 mb-6">
+          Import Wallet
+        </h1>
         <p className="text-base mb-4">Secret Recovery Phrase</p>
-        <p className="text-sm mb-6">Enter your 12-word recovery phrase below. Each box represents one word.</p>
+        <p className="text-sm mb-6 text-center">
+          Enter your 12-word recovery phrase below. Each box represents one
+          word.
+        </p>
         <div className="grid grid-cols-3 gap-4 mb-6">
           {Array.from({ length: 12 }).map((_, index) => (
             <div key={index} className="flex items-center">
-              <span className="text-[#00f0ff] font-semibold mr-2">{index + 1}.</span>
               <input
                 {...register(`word_${index}`, { required: true })}
                 type="text"
-                className="w-full bg-[#2a2a2a] text-[#f8f8f2] border border-[#8e44ad] rounded-md p-2"
-                placeholder={`Word ${index + 1}`}
+                className="w-full bg-zinc-200 text-black border border-fuchsia-500 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200"
+                placeholder={`${index + 1}.`}
               />
             </div>
           ))}
         </div>
         <button
           type="submit"
-          className="bg-[#00f0ff] text-[#121212] font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-[#00c0cc] transition duration-300"
+          className="bg-gradient-to-r from-purple-500 to-purple-800 text-white font-semibold py-3 px-6 rounded-full shadow-md hover:shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105"
         >
           Import Wallet
         </button>
