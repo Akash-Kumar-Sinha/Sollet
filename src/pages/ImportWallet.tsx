@@ -1,6 +1,14 @@
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import * as bip39 from "bip39";
+import CryptoJS from "crypto-js";
+import { MEMONICS_PHRASE_CIPHERTEXT } from "../types/type";
+
+const SECRET_KEY = import.meta.env.VITE_SECRET_KEY;
+
+if (!SECRET_KEY) {
+  throw new Error("VITE_SECRET_KEY is required");
+}
 
 const ImportWallet = () => {
   const navigate = useNavigate();
@@ -8,9 +16,16 @@ const ImportWallet = () => {
 
   const onSubmit = (data: Record<string, string>) => {
     const mnemonic = Object.values(data).join(" ");
-    console.log(mnemonic);
     if (bip39.validateMnemonic(mnemonic)) {
-      localStorage.setItem("mnemonic", mnemonic);
+      const ciphertext_encrypt_sollet = CryptoJS.AES.encrypt(
+        mnemonic,
+        SECRET_KEY
+      ).toString();
+
+      localStorage.setItem(
+        MEMONICS_PHRASE_CIPHERTEXT,
+        ciphertext_encrypt_sollet
+      );
       navigate("/create-password");
     } else {
       console.log("Invalid recovery phrase");

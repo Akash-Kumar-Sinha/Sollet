@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BsCopy } from "react-icons/bs";
+
 import { toast } from "sonner";
 
-import { generateWallet } from "../utils/generateWallet";
+import { generateMnemonicPhrase } from "../utils/generateMnemonicPhrase";
 
 const GenerateMnemonic = () => {
   const [mnemonic, setMnemonic] = useState<string | undefined>("");
@@ -12,7 +13,7 @@ const GenerateMnemonic = () => {
 
   useEffect(() => {
     (async () => {
-      const { mnemonic } = await generateWallet();
+      const { mnemonic } = await generateMnemonicPhrase();
       setMnemonic(mnemonic);
     })();
   }, []);
@@ -25,7 +26,7 @@ const GenerateMnemonic = () => {
     if (isChecked) {
       navigate("/create-password");
     } else {
-      alert("Please confirm that you have saved your secret recovery phrase.");
+      toast.error("Please confirm that you have saved your secret recovery phrase.");
     }
   };
 

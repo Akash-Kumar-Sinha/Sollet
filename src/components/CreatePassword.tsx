@@ -1,24 +1,31 @@
+import { PASSWORD_CIPHERTEXT } from "@/types/type";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+// import { addNewWallet } from "./AddNewWallet";
+// import { useWalletIndex } from "@/utils/IndexContext";
 
 const CreatePassword = () => {
+  // const { currentIndex, setCurrentIndex } = useWalletIndex();
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [isChecked, setIsChecked] = useState<boolean>(false);
-  
+
   const navigate = useNavigate();
 
   const handleCheckboxChange = () => {
     setIsChecked(!isChecked);
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (password === confirmPassword && isChecked) {
+      localStorage.setItem(PASSWORD_CIPHERTEXT, password);
+      // await addNewWallet(currentIndex, setCurrentIndex);
       navigate("/wallet");
     } else if (!isChecked) {
-      alert("Please agree to the terms and conditions.");
+      toast.error("Please agree to the terms and conditions.");
     } else if (password !== confirmPassword) {
-      alert("Passwords do not match.");
+      toast.error("Passwords do not match.");
     }
   };
 
