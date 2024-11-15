@@ -1,4 +1,5 @@
-import { PASSWORD_CIPHERTEXT } from "@/types/type";
+import { DEVNET_URL, PASSWORD_CIPHERTEXT } from "@/types/type";
+import { encryptPassword } from "@/utils/encryptMnemonicAndSecretKey";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -18,9 +19,15 @@ const CreatePassword = () => {
   };
 
   const handleNext = async () => {
+    if (!password || !confirmPassword) {
+      toast.error("Please enter a password.");
+      return;
+    }
     if (password === confirmPassword && isChecked) {
-      localStorage.setItem(PASSWORD_CIPHERTEXT, password);
-      // await addNewWallet(currentIndex, setCurrentIndex);
+      const encryptedPassword = encryptPassword(password);
+
+      localStorage.setItem(PASSWORD_CIPHERTEXT, encryptedPassword);
+      localStorage.setItem("network", DEVNET_URL);
       navigate("/wallet");
     } else if (!isChecked) {
       toast.error("Please agree to the terms and conditions.");

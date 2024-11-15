@@ -1,5 +1,6 @@
 import { PASSWORD_CIPHERTEXT } from "@/types/type";
 import CryptoJS from "crypto-js";
+import { decryptPassword } from "./decryptMnemonicAnsSecretKey";
 
 const SECRET_KEY = import.meta.env.VITE_SECRET_KEY;
 
@@ -7,15 +8,27 @@ if (!SECRET_KEY) {
   throw new Error("VITE_SECRET_KEY is required");
 }
 
+export const encryptPassword = (password: string) => {
+  const encryptedData = CryptoJS.AES.encrypt(password, SECRET_KEY).toString();
+  return encryptedData;
+}
+
 export const encryptSecretKey = (secretKey: string) => {
   try {
     const passwordCipher = localStorage.getItem(PASSWORD_CIPHERTEXT);
+
     if (!passwordCipher) {
+      throw new Error("Password is required for encryption");
+    }
+
+    const password = decryptPassword(passwordCipher);
+
+    if (!password) {
       throw new Error("Password is required for encryption");
     }
     const encryptData = CryptoJS.AES.encrypt(
       secretKey,
-      passwordCipher
+      password
     ).toString();
     return encryptData;
   } catch (error: unknown) {

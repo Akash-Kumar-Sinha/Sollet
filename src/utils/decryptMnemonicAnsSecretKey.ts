@@ -7,38 +7,41 @@ if (!SECRET_KEY) {
   throw new Error("VITE_SECRET_KEY is required");
 }
 
-export const decryptSecretKey = (
-  ciphertextSecretKey: string
-) => {
-  try {
-    const password = localStorage.getItem(PASSWORD_CIPHERTEXT);
+export const decryptPassword = (ciphertextMnemonic: string) => {
+  const bytes = CryptoJS.AES.decrypt(ciphertextMnemonic, SECRET_KEY);
+  const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
+  return decryptedData;
+}
 
+
+export const decryptSecretKey = (ciphertextSecretKey: string) => {
+  try {
+    const encryptedPassword = localStorage.getItem(PASSWORD_CIPHERTEXT);
+
+    if (!encryptedPassword) {
+      throw new Error("Password is not found");
+    }
+
+    const password = decryptPassword(encryptedPassword);
+    
     if (!password) {
       throw new Error("Password is not found");
     }
+
     const bytes = CryptoJS.AES.decrypt(ciphertextSecretKey, password);
     const decryptedHexString = bytes.toString(CryptoJS.enc.Utf8);
 
-    // const hexToUint8Array = (hex: string): Uint8Array => {
-    //   const byteArray = new Uint8Array(hex.length / 2);
-    //   for (let i = 0; i < hex.length; i += 2) {
-    //     byteArray[i / 2] = parseInt(hex.substr(i, 2), 16);
-    //   }
-    //   return byteArray;
-    // };
-
-    // const secretKeyArray = hexToUint8Array(decryptedHexString);
+    if (!decryptedHexString) {
+      throw new Error("Decryption failed, result is empty.");
+    }
 
     return decryptedHexString;
   } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.error("Error during decryption:", error.message);
-    } else {
-      console.error("Error during decryption:", error);
-    }
+    console.error("Error during decryption:", error);
     return null;
   }
 };
+
 
 export const decryptMnemonic = (ciphertextmnemonic: string) => {
   const bytes = CryptoJS.AES.decrypt(ciphertextmnemonic, SECRET_KEY);

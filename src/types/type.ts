@@ -4,3 +4,6 @@ export const PASSWORD_CIPHERTEXT="ciphertext_password_sollet"
 
 export const DEVNET_URL="https://api.devnet.solana.com"
 export const MAINNET_URL="https://api.mainnet-beta.solana.com"
+
+export type NETWORK_URL = typeof DEVNET_URL | typeof MAINNET_URL;
+

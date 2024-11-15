@@ -8,6 +8,7 @@ import {
   Keypair,
   Connection,
   LAMPORTS_PER_SOL,
+  TransactionResponse,
 } from "@solana/web3.js";
 
 import { toast } from "sonner";
@@ -29,6 +30,7 @@ import {
 import { encryptSecretKey } from "@/utils/encryptMnemonicAndSecretKey";
 
 import WalletList from "./WalletList";
+import TransactionList from "./TransactionList ";
 
 type NETWORK_URL = typeof DEVNET_URL | typeof MAINNET_URL;
 
@@ -41,11 +43,14 @@ const WalletApp = () => {
   const [wallets, setWallets] = useState<PublicKey[]>([]);
   const [network, setNetwork] = useState<NETWORK_URL>(DEVNET_URL);
   const [solAmounts, setSolAmounts] = useState<Map<string, number>>(new Map());
+  const [trackAddress, setTrackAddress] = useState("");
+  const [transactionHistory, setTransactionHistory] = useState<
+    (TransactionResponse | null)[]
+  >([]);
 
   const fetchBalances = async (wallet: PublicKey) => {
     if (wallet) {
       const connection = new Connection(network, "confirmed");
-      // for (const wallet of wallets) {
       const balance = await connection.getBalance(wallet);
       setSolAmounts((prev) =>
         new Map(prev).set(wallet.toBase58(), balance / LAMPORTS_PER_SOL)
@@ -79,7 +84,7 @@ const WalletApp = () => {
       const keypair = Keypair.fromSecretKey(bs58.decode(decryptedSecretKey));
 
       loadedWallets.push(keypair.publicKey);
-      console.log("loadedWallets")
+
       fetchBalances(keypair.publicKey);
     }
 
@@ -143,21 +148,29 @@ const WalletApp = () => {
     }
   };
 
-  // Make teh function addNewWallet to create one wallet as the new user lands on this page
+  useEffect(() => {
+    // Fetch balances again after the network changes
+    wallets.forEach((wallet) => fetchBalances(wallet));
+  }, [network, wallets]); 
+
   useEffect(() => {
     addNewWallet();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const changeNetworkToTestnetOrMainnet = () => {
-    const resetSolAmounts = new Map(
-      wallets.map((wallet) => [wallet.toBase58(), 0])
-    );
+    // Reset the Solana amounts when switching networks
+    const resetSolAmounts = new Map(wallets.map((wallet) => [wallet.toBase58(), 0]));
     setSolAmounts(resetSolAmounts);
-    setNetwork((prev: NETWORK_URL) =>
-      prev === DEVNET_URL ? MAINNET_URL : DEVNET_URL
-    );
+  
+    // Update the network state first
+    setNetwork((prevNetwork) => {
+      const newNetwork = prevNetwork === DEVNET_URL ? MAINNET_URL : DEVNET_URL;
+      localStorage.setItem("network", newNetwork);
+      return newNetwork;
+    });
   };
+  
 
   const copyAddress = (address: string) => {
     navigator.clipboard.writeText(address);
@@ -165,18 +178,54 @@ const WalletApp = () => {
   };
 
   return (
-    <div className="h-full min-h-screen w-full bg-zinc-950 p-6">
-      <Header
-        networkUrl={network}
-        addNewWallet={addNewWallet}
-        changeNetworkToTestnetOrMainnet={changeNetworkToTestnetOrMainnet}
-      />
+    <div className="min-h-screen w-full bg-zinc-900 p-6 flex flex-col">
+      <div className="w-full bg-yellow-500 text-black text-center text-sm font-medium p-3 rounded-md mb-4 shadow-lg">
+        Everything is working on Devnet. It may not work on Mainnet, so please
+        switch to Devnet.
+      </div>
 
-      <WalletList
-        wallets={wallets}
-        solAmounts={solAmounts}
-        copyAddress={copyAddress}
-      />
+      <div className="w-full rounded-xl shadow-md mb-6">
+        <Header
+          networkUrl={network}
+          addNewWallet={addNewWallet}
+          changeNetworkToTestnetOrMainnet={changeNetworkToTestnetOrMainnet}
+          setTrackAddress={setTrackAddress}
+          trackAddress={trackAddress}
+          setTransactionHistory={setTransactionHistory}
+          setNetwork={setNetwork}
+        />
+      </div>
+
+      <div className="flex flex-col lg:flex-row w-full flex-1 gap-6">
+        <div className="flex flex-col w-full lg:w-2/3">
+          <WalletList
+            wallets={wallets}
+            solAmounts={solAmounts}
+            copyAddress={copyAddress}
+          />
+        </div>
+
+        <div className="h-auto lg:h-screen overflow-auto w-full lg:w-1/3 bg-zinc-800 p-4 rounded-lg shadow-lg flex flex-col justify-center items-center">
+          {trackAddress ? (
+            <TransactionList
+              transactions={transactionHistory.filter(
+                (transaction): transaction is TransactionResponse =>
+                  transaction !== null
+              )}
+              isLoading={false}
+            />
+          ) : (
+            <div className="flex flex-col items-center justify-center h-40 bg-zinc-700 rounded-md border border-dashed border-[#00f0ff] p-4 text-center">
+              <p className="text-xl font-semibold text-[#00f0ff] mb-2">
+                No Address Tracked
+              </p>
+              <p className="text-sm text-zinc-400">
+                Start tracking an address to view transactions here.
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
