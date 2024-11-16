@@ -180,7 +180,7 @@ const WalletApp = () => {
   return (
     <div className="min-h-screen w-full bg-zinc-900 p-6 flex flex-col">
       <div className="w-full bg-yellow-500 text-black text-center text-sm font-medium p-3 rounded-md mb-4 shadow-lg">
-        Everything is working on Devnet. It may not work on Mainnet, so please
+        Everything is working on Devnet. So please
         switch to Devnet.
       </div>
 
