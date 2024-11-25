@@ -151,7 +151,7 @@ const WalletApp = () => {
   useEffect(() => {
     // Fetch balances again after the network changes
     wallets.forEach((wallet) => fetchBalances(wallet));
-  }, [network, wallets]); 
+  }, [network, wallets]);
 
   useEffect(() => {
     addNewWallet();
@@ -160,9 +160,11 @@ const WalletApp = () => {
 
   const changeNetworkToTestnetOrMainnet = () => {
     // Reset the Solana amounts when switching networks
-    const resetSolAmounts = new Map(wallets.map((wallet) => [wallet.toBase58(), 0]));
+    const resetSolAmounts = new Map(
+      wallets.map((wallet) => [wallet.toBase58(), 0])
+    );
     setSolAmounts(resetSolAmounts);
-  
+
     // Update the network state first
     setNetwork((prevNetwork) => {
       const newNetwork = prevNetwork === DEVNET_URL ? MAINNET_URL : DEVNET_URL;
@@ -170,7 +172,6 @@ const WalletApp = () => {
       return newNetwork;
     });
   };
-  
 
   const copyAddress = (address: string) => {
     navigator.clipboard.writeText(address);
@@ -178,12 +179,12 @@ const WalletApp = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-zinc-900 p-6 flex flex-col">
-      <div className="w-full bg-yellow-500 text-black text-center text-sm font-medium p-3 rounded-md mb-4 shadow-lg">
-        Everything is working on Devnet. So please
-        switch to Devnet.
+    <div className="min-h-screen w-full bg-zinc-900 p-4 md:p-6 flex flex-col">
+      <div className="w-full bg-yellow-500 text-black text-center text-xs md:text-sm font-medium p-3 rounded-md mb-4 shadow-lg">
+        Everything is working on Devnet. Please switch to Devnet.
       </div>
 
+      {/* Header Section */}
       <div className="w-full rounded-xl shadow-md mb-6">
         <Header
           networkUrl={network}
@@ -196,7 +197,9 @@ const WalletApp = () => {
         />
       </div>
 
+      {/* Main Content Section */}
       <div className="flex flex-col lg:flex-row w-full flex-1 gap-6">
+        {/* Wallet List Section */}
         <div className="flex flex-col w-full lg:w-2/3">
           <WalletList
             wallets={wallets}
@@ -205,7 +208,8 @@ const WalletApp = () => {
           />
         </div>
 
-        <div className="h-auto lg:h-screen overflow-auto w-full lg:w-1/3 bg-zinc-800 p-4 rounded-lg shadow-lg flex flex-col justify-center items-center">
+        {/* Transaction List Section */}
+        <div className="h-auto lg:h-screen overflow-auto w-full lg:w-1/3 bg-zinc-800 p-4 rounded-lg shadow-lg flex flex-col">
           {trackAddress ? (
             <TransactionList
               transactions={transactionHistory.filter(
@@ -216,10 +220,10 @@ const WalletApp = () => {
             />
           ) : (
             <div className="flex flex-col items-center justify-center h-40 bg-zinc-700 rounded-md border border-dashed border-[#00f0ff] p-4 text-center">
-              <p className="text-xl font-semibold text-[#00f0ff] mb-2">
+              <p className="text-lg md:text-xl font-semibold text-[#00f0ff] mb-2">
                 No Address Tracked
               </p>
-              <p className="text-sm text-zinc-400">
+              <p className="text-xs md:text-sm text-zinc-400">
                 Start tracking an address to view transactions here.
               </p>
             </div>

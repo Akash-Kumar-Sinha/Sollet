@@ -9,8 +9,8 @@ interface TransactionListProps {
 const TransactionList: React.FC<TransactionListProps> = React.memo(
   ({ transactions, isLoading }) => {
     return (
-      <div className="bg-zinc-900 p-3 rounded-lg shadow-lg w-full max-w-3xl overflow-auto">
-        <h2 className="text-2xl font-bold text-[#00f0ff] mb-6 text-center">
+      <div className="bg-zinc-900 p-4 sm:p-6 rounded-lg shadow-lg w-full max-w-4xl mx-auto overflow-x-auto">
+        <h2 className="text-xl sm:text-2xl font-bold text-[#00f0ff] mb-6 text-center">
           Track Wallet
         </h2>
 
@@ -28,8 +28,8 @@ const TransactionList: React.FC<TransactionListProps> = React.memo(
                 className="bg-zinc-800 p-4 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300"
               >
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <p className="text-white text-sm break-all max-w-[70%]">
+                  <div className="flex flex-wrap justify-between items-center gap-2">
+                    <p className="text-white text-sm break-words max-w-full sm:max-w-[70%]">
                       <span className="font-semibold">Signature:</span>{" "}
                       {transaction.transaction.signatures[0]}
                     </p>

@@ -125,7 +125,7 @@ const WalletList: React.FC<WalletListProps> = ({
           key={index}
           className="flex flex-col max-w-5xl bg-zinc-200 border border-fuchsia-500 p-6 rounded-lg shadow-md"
         >
-          <div className="flex justify-between">
+          <div className="flex justify-center flex-wrap items-center gap-2">
             <div className="flex flex-col">
               <p className="text-lg font-semibold mb-2 text-fuchsia-700">
                 Wallet Address:
